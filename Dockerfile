@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     libgl1 \
     libglib2.0-0 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -13,6 +14,10 @@ WORKDIR /app
 # Copy requirements first for caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Install Playwright browsers
+RUN playwright install chromium
+RUN playwright install-deps chromium
 
 # Pre-download EasyOCR models (takes time, better during build)
 RUN python -c "import easyocr; easyocr.Reader(['en'], gpu=False)"
